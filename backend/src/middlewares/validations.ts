@@ -3,6 +3,7 @@ import { Types } from 'mongoose'
 
 // eslint-disable-next-line no-useless-escape
 export const phoneRegExp = /^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/
+export const allowedSymbols = /^[a-zA-Zа-яА-Я0-9\s\.,!?\-_]+$/
 
 export enum PaymentType {
     Card = 'card',
@@ -35,7 +36,7 @@ export const validateOrderBody = celebrate({
         email: Joi.string().email().required().messages({
             'string.empty': 'Не указан email',
         }),
-        phone: Joi.string().required().pattern(phoneRegExp).messages({
+        phone: Joi.string().required().trim().max(12).pattern(phoneRegExp).messages({
             'string.empty': 'Не указан телефон',
         }),
         address: Joi.string().required().messages({
@@ -44,7 +45,7 @@ export const validateOrderBody = celebrate({
         total: Joi.number().required().messages({
             'string.empty': 'Не указана сумма заказа',
         }),
-        comment: Joi.string().optional().allow(''),
+        comment: Joi.string().optional().allow('').trim().max(500).pattern(allowedSymbols),
     }),
 })
 
@@ -68,6 +69,7 @@ export const validateProductBody = celebrate({
             'string.empty': 'Поле "description" должно быть заполнено',
         }),
         price: Joi.number().allow(null),
+        
     }),
 })
 
