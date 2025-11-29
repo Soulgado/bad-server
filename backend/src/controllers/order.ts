@@ -32,12 +32,18 @@ export const getOrders = async (
 
         const validatedLimit = Number(limit) > 10 ? 10 : Number(limit)
 
+        const sanitizeString = (value: any): string | null => {
+            if (typeof value !== 'string') return null;
+            // Remove dangerous characters and operators
+            return value.replace(/[$\-{}[\];()&=<>]/, '');
+        }
+
         if (status) {
             if (typeof status === 'object') {
                 Object.assign(filters, status)
             }
             if (typeof status === 'string') {
-                filters.status = status
+                filters.status = sanitizeString(status)
             }
         }
 
