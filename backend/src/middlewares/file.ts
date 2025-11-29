@@ -1,9 +1,29 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
 import { join } from 'path'
+import { existsSync, mkdirSync } from 'fs'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
+
+const initializeUploadDirectory = () => {
+    const uploadPath = join(
+        __dirname,
+        process.env.UPLOAD_PATH_TEMP
+            ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+            : '../public'
+    );
+    
+    if (!existsSync(uploadPath)) {
+        mkdirSync(uploadPath, { recursive: true });
+        console.log(`Created upload directory: ${uploadPath}`);
+    }
+    
+    return uploadPath;
+};
+
+// create temp directory on app start
+const uploadPath = initializeUploadDirectory();
 
 const storage = multer.diskStorage({
     destination: (
@@ -13,12 +33,7 @@ const storage = multer.diskStorage({
     ) => {
         cb(
             null,
-            join(
-                __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                    : '../public'
-            )
+            uploadPath
         )
     },
 
