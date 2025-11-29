@@ -30,6 +30,8 @@ export const getOrders = async (
 
         const filters: FilterQuery<Partial<IOrder>> = {}
 
+        const validatedLimit = Number(limit) > 10 ? 10 : Number(limit)
+
         if (status) {
             if (typeof status === 'object') {
                 Object.assign(filters, status)
@@ -116,8 +118,8 @@ export const getOrders = async (
 
         aggregatePipeline.push(
             { $sort: sort },
-            { $skip: (Number(page) - 1) * Number(limit) },
-            { $limit: Number(limit) },
+            { $skip: (Number(page) - 1) * validatedLimit },
+            { $limit: validatedLimit },
             {
                 $group: {
                     _id: '$_id',
@@ -133,7 +135,7 @@ export const getOrders = async (
 
         const orders = await Order.aggregate(aggregatePipeline)
         const totalOrders = await Order.countDocuments(filters)
-        const totalPages = Math.ceil(totalOrders / Number(limit))
+        const totalPages = Math.ceil(totalOrders / validatedLimit)
 
         res.status(200).json({
             orders,
@@ -141,7 +143,7 @@ export const getOrders = async (
                 totalOrders,
                 totalPages,
                 currentPage: Number(page),
-                pageSize: Number(limit),
+                pageSize: validatedLimit,
             },
         })
     } catch (error) {
