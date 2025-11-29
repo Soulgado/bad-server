@@ -9,6 +9,7 @@ import { DB_ADDRESS } from './config'
 import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
+import { initializeUploadDirectory } from './middlewares/file'
 
 const { PORT = 3000 } = process.env
 const app = express()
@@ -28,6 +29,8 @@ app.options('*', cors())
 app.use(routes)
 app.use(errors())
 app.use(errorHandler)
+
+initializeUploadDirectory();
 
 // eslint-disable-next-line no-console
 

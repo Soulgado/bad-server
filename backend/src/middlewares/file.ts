@@ -6,7 +6,7 @@ import { existsSync, mkdirSync } from 'fs'
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
 
-const initializeUploadDirectory = () => {
+export const initializeUploadDirectory = () => {
     const uploadPath = join(
         __dirname,
         process.env.UPLOAD_PATH_TEMP
@@ -16,7 +16,6 @@ const initializeUploadDirectory = () => {
     
     if (!existsSync(uploadPath)) {
         mkdirSync(uploadPath, { recursive: true });
-        console.log(`Created upload directory: ${uploadPath}`);
     }
     
     return uploadPath;
