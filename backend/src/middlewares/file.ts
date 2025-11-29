@@ -12,7 +12,7 @@ export const initializeUploadDirectory = () => {
         __dirname,
         process.env.UPLOAD_PATH_TEMP
             ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-            : '../public'
+            : '../public/temp'
     );
     
     if (!existsSync(uploadPath)) {

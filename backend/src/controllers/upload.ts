@@ -20,7 +20,7 @@ export const uploadFile = async (
     }
 
     try {
-        const metadata = await sharp(req.file.buffer).metadata();
+        const metadata = await sharp(req.file.path).metadata();
         if (!metadata.width && !metadata.height) {
             return next(new BadRequestError('Файл не загружен'))
         }
