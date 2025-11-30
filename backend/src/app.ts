@@ -10,6 +10,7 @@ import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
 import { initializeUploadDirectory } from './middlewares/file'
+import limiter from './utils/rateLimit'
 
 initializeUploadDirectory();
 const { PORT = 3000 } = process.env
@@ -30,6 +31,7 @@ app.options('*', cors())
 app.use(routes)
 app.use(errors())
 app.use(errorHandler)
+app.use(limiter)
 
 // eslint-disable-next-line no-console
 
