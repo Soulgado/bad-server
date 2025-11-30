@@ -1,9 +1,29 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
-import { join } from 'path'
+import { join, extname, resolve } from 'path'
+import { existsSync, mkdirSync } from 'fs'
+import uniqueSlug from 'unique-slug'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
+
+export const initializeUploadDirectory = () => {
+    const workspace = process.env.GITHUB_WORKSPACE || resolve(process.cwd(), '..');
+    const uploadPath = join(
+        workspace,
+        'backend/src/public',
+        process.env.UPLOAD_PATH_TEMP || 'temp'
+    );
+    
+    if (!existsSync(uploadPath)) {
+        mkdirSync(uploadPath, { recursive: true });
+    }
+    
+    return uploadPath;
+};
+
+// create temp directory on app start
+const uploadPath = initializeUploadDirectory();
 
 const storage = multer.diskStorage({
     destination: (
@@ -13,12 +33,7 @@ const storage = multer.diskStorage({
     ) => {
         cb(
             null,
-            join(
-                __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                    : '../public'
-            )
+            uploadPath
         )
     },
 
@@ -27,7 +42,9 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        cb(null, file.originalname)
+        const fileExt = extname(file.originalname)
+        const fileName = `${uniqueSlug()}${fileExt}`
+        cb(null, fileName)
     },
 })
 
