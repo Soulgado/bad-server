@@ -8,11 +8,13 @@ type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
 
 export const initializeUploadDirectory = () => {
+    const projectRoot = process.cwd();
     const uploadPath = join(
-        __dirname,
+        projectRoot,
+        'src/public',
         process.env.UPLOAD_PATH_TEMP
-            ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-            : '../public/temp'
+            ? `${process.env.UPLOAD_PATH_TEMP}`
+            : 'temp'
     );
     
     if (!existsSync(uploadPath)) {
