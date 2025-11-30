@@ -11,6 +11,7 @@ import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
 import { initializeUploadDirectory } from './middlewares/file'
 
+initializeUploadDirectory();
 const { PORT = 3000 } = process.env
 const app = express()
 
@@ -29,8 +30,6 @@ app.options('*', cors())
 app.use(routes)
 app.use(errors())
 app.use(errorHandler)
-
-initializeUploadDirectory();
 
 // eslint-disable-next-line no-console
 
