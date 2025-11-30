@@ -1,6 +1,6 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
-import { join, extname } from 'path'
+import { join, extname, resolve } from 'path'
 import { existsSync, mkdirSync } from 'fs'
 import uniqueSlug from 'unique-slug'
 
@@ -8,13 +8,11 @@ type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
 
 export const initializeUploadDirectory = () => {
-    const projectRoot = process.cwd();
+    const workspace = process.env.GITHUB_WORKSPACE || resolve(process.cwd(), '..');
     const uploadPath = join(
-        projectRoot,
-        'src/public',
-        process.env.UPLOAD_PATH_TEMP
-            ? `${process.env.UPLOAD_PATH_TEMP}`
-            : 'temp'
+        workspace,
+        'backend/src/public',
+        process.env.UPLOAD_PATH_TEMP || 'temp'
     );
     
     if (!existsSync(uploadPath)) {
